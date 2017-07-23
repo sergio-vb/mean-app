@@ -26,6 +26,8 @@ router.get('/task/:id', function(req, res, next){
 //Save task
 router.post('/task', function(req, res, next){
 	var task = req.body;
+	
+	//if(!task.title) || !(task.isDone + '')){
 	if(!task.title || ( typeof task.isDone === 'undefined' || task.isDone === null ) ){
 			res.status(400);
 			res.json({
@@ -39,6 +41,46 @@ router.post('/task', function(req, res, next){
 			res.json(tasks);
 		})
 	}
+});
+
+//Delete a single task
+router.delete('/task/:id', function(req, res, next){
+	db.tasks.remove({_id: mongojs.ObjectId(req.params.id)}, function(err, task){
+		if(err){
+			res.send(err);
+		}
+		res.json(task);
+	});
+});
+
+//Update task
+router.put('/task/:id', function(req, res, next){
+	var task = req.body;
+	var updatedTask = {};
+
+	if (task.isDone){ //Incorrect way of checking existence of property
+		updatedTask.isDone = task.isDone;
+		console.log("Task.isDone == truthy");
+	}
+	if (task.title){
+		updatedTask.title = task.title;
+	}
+
+	if(!updatedTask){ //Incorrect, will always evaluate to false
+		res.status(400);
+		res.json({
+			"error":"Bad data"
+		});
+	}else{
+		db.tasks.update({_id: mongojs.ObjectId(req.params.id)}, updatedTask, {}, function(err, task){
+			if(err){
+				res.send(err);
+			}
+			res.json(task);
+		});
+	}
+
+	
 });
 
 module.exports = router;
