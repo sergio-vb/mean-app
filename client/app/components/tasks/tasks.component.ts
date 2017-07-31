@@ -10,7 +10,7 @@ import { Task } from '../../../Task';
 export class TasksComponent{
 
     tasks:Task[];
-    title:string;
+    newTaskTitle:string;
 
     constructor(private taskService:TaskService){
         this.taskService.getTasks()
@@ -22,15 +22,31 @@ export class TasksComponent{
 
     addTask(event:Event){
         event.preventDefault;
+        console.log('addTask called. Title:', this.newTaskTitle);
         var newTask = {
-            title: this.title,
+            title: this.newTaskTitle,
             isDone: false
         }
 
         this.taskService.addTask(newTask)
-            .subscribe(task => {
-                this.tasks.push(newTask);
-                this.title = "";
+            .subscribe( (task:any) => {
+                this.tasks.push(task);
+                this.newTaskTitle = "";
+            });
+    }
+    
+    deleteTask(id:string){
+        var tasks = this.tasks;
+        this.taskService.deleteTask(id)
+            .subscribe(data => {
+                if(data.n === 1){ //Operation successful
+                    for (var i = 0; i < tasks.length; i++){
+                        if (tasks[i]._id == id){
+                            tasks.splice(i, 1);
+                        }
+                    }
+                    //tasks = tasks.filter(task => (task._id !== id));
+                }
             });
     }
 }
