@@ -7,7 +7,7 @@
 <ul class="task-list">
     <li class="row" *ngFor="let task of tasks">
         <div class="col-sm-1">
-            <input type="checkbox">
+            <input type="checkbox" (change)="changeTaskStatus(task)" [attr.checked]="task.isDone ? '' : null">
         </div>
         <div class="col-sm-7">{{task.title}}</div>
         <div class="col-sm-4">

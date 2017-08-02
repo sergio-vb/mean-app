@@ -13,11 +13,10 @@ export class TasksComponent{
     newTaskTitle:string;
 
     constructor(private taskService:TaskService){
-        this.taskService.getTasks()
-            .subscribe(tasks => {
-                console.log(tasks);
-                this.tasks = tasks;
-            });
+        this.taskService.getTasks().subscribe(tasks => {
+            console.log(tasks);
+            this.tasks = tasks;
+        });
     }
 
     addTask(event:Event){
@@ -28,25 +27,25 @@ export class TasksComponent{
             isDone: false
         }
 
-        this.taskService.addTask(newTask)
-            .subscribe( (task:any) => {
-                this.tasks.push(task);
-                this.newTaskTitle = "";
-            });
+        this.taskService.addTask(newTask).subscribe( (task:any) => {
+            this.tasks.push(task);
+            this.newTaskTitle = "";
+        });
     }
     
     deleteTask(id:string){
-        var tasks = this.tasks;
-        this.taskService.deleteTask(id)
-            .subscribe(data => {
-                if(data.n === 1){ //Operation successful
-                    for (var i = 0; i < tasks.length; i++){
-                        if (tasks[i]._id == id){
-                            tasks.splice(i, 1);
-                        }
-                    }
-                    //tasks = tasks.filter(task => (task._id !== id));
-                }
-            });
+        this.taskService.deleteTask(id).subscribe(data => {
+            if(data.n === 1){ //Operation successful
+                this.tasks = this.tasks.filter(task => (task._id !== id));
+            }
+        });
+    }
+
+    changeTaskStatus(updatedTask:Task){
+        const _task = Object.assign({}, updatedTask, {isDone: !updatedTask.isDone});
+
+        this.taskService.updateTask(_task).subscribe(data => {
+            updatedTask.isDone = !updatedTask.isDone;
+        });
     }
 }

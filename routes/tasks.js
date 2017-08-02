@@ -58,7 +58,7 @@ router.put('/task/:id', function(req, res, next){
 	var task = req.body;
 	var updatedTask = {};
 
-	if (task.isDone){ //Incorrect way of checking existence of property
+	if ( typeof task.isDone !== 'undefined' && task.isDone !== null && task.isDone !== "" ){
 		updatedTask.isDone = task.isDone;
 		console.log("Task.isDone == truthy");
 	}
